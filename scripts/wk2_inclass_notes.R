@@ -25,7 +25,7 @@ dir.create(path = scripts)
 # quotes mean character
 dir.create(path = "scripts")
 
-save
+ngRok::livestream_stop(id)
 
 
 
