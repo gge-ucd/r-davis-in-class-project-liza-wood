@@ -1,59 +1,52 @@
 library(tidyverse)
-surveys_t <- read_csv("data/portal_data_joined.csv")
+surveys_t <- read_csv('data/portal_data_joined.csv')
 
-# In the last video you've have an introduction to tidyverse, where you've gone over selecting columns, filtered rows, now let's continue on to manipulating the data
+# mutate -- creating a new object/variable  
+str(surveys_t)
 
-
-# Mutate ----
-colnames(surveys_t)
 surveys_t$weight/1000
 
-# mutate(new_name = manipulation of existing column)
-
-# shortcut: Cmd + Shft + M
-
-surveys_t2 <-  surveys_t %>% 
-  mutate(weight_kg = weight/1000)
-# look at the number of variables in surveys_t and surveys_t2
-# can do multiple mutates at once
-
-# Group by and summarize
-?summarize
-# use summarize with basic mathematical functions:
-## mean, max, min, median, etc. -- make sure we remove NAs
+# cmd + shift + m
+# mutate(new_column_name = edit to exiting column)
 surveys_t %>% 
-  summarize(mean(weight, na.rm = T))
+  mutate(weight_kg = weight/1000) # with pipes, don't need specify data frame
+  
+# make sure to name a new object
+surveys2 <- surveys_t %>% 
+  mutate(weight_kg = weight/1000) 
+surveys2$weight_kg  
+  
+# group by and summarize
 
-## As scientists, we want to know about summarize based on attributes of our study subject. The average value of something can be interesting, but really we want to see how that average value differs **between groups.** 
+# use math function to get summaries, but we need to remove the NAs
+# remove NAs within function using rm.na = T
+?mean
+mean(surveys_t$weight, na.rm = T)
 
-# This is where group_by function comes in
 surveys_t %>% 
-  group_by(sex) # nothing happens with group_by alone, must be paired with summarize
+  summarize(max(weight, na.rm = T))
 
 surveys_t %>% 
   group_by(sex) %>% 
-  summarize(mean(weight, na.rm = T))
-
-# Can do multiple
-surveys_t %>% 
-  group_by(sex) %>% 
-  summarize(avg_weight = mean(weight, na.rm = T),
+  summarize(mean_weight = mean(weight, na.rm = T), # name our columns
             max_weight = max(weight, na.rm = T))
 
-# Group by multiple -- can start understanding all sorts of cross-tabs
+# multiple group bys
 
 surveys_t %>% 
+  group_by(species_id, sex) %>% 
+  summarize(mean_weight = mean(weight, na.rm = T))
+
+# cleaning this up
+
+summary_table <- surveys_t %>% 
   filter(!is.na(sex)) %>% 
   group_by(species_id, sex) %>% 
-  summarize(avg_weight = mean(weight, na.rm = T)) 
+  summarize(mean_weight = mean(weight, na.rm = T)) %>% 
+  arrange(mean_weight)
 
-# arrnge function I want to know species weights
-surveys_t %>% 
-  filter(!is.na(species_id)) %>% 
-  group_by(species_id) %>% 
-  summarize(avg_weight = mean(weight, na.rm = T)) 
 
-# But even with na.rm = T we can see we don't have any weights for some species, which is annoting... 
-  arrange(-avg_weight)
 
-  
+
+
+
