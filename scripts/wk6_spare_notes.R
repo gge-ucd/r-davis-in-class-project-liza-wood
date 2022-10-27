@@ -111,3 +111,19 @@ ggplot(surveys_ife, aes(x = weight_cat, y = hindfoot_length)) +
 ggplot(surveys_ife, aes(x = weight_cat, y = hindfoot_length)) + 
   geom_jitter(alpha = .5) +
   geom_boxplot(fill = "darkgreen")
+
+
+surveys_complete <- read_csv("data/portal_data_joined.csv") %>% 
+  filter(complete.cases(.))
+
+yearly_counts <- surveys_complete %>% 
+  count(year, species_id)
+
+g <- ggplot(data = yearly_counts)
+g + geom_point(mapping = aes(x = year, y = n))
+g + geom_point(mapping = aes(x = year, y = n)) +
+  geom_path(mapping = aes(x = year, y = n,
+                          color = species_id))
+g + geom_path(mapping = aes(x = year, y = n, 
+                          color = species_id,
+                          linetype = sex))
